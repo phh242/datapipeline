@@ -121,7 +121,7 @@ services:
         #                 "follow", "forward", "four", "go", "happy", "house", "learn", "left", 
         #                 "marvin", "nine", "no", "off", "on", "one", "right", "seven", "sheila", 
         #                 "six", "stop", "three", "tree", "two", "up", "visual", "wow", "yes", "zero"]
-        base_subdirs = ["backward", "bed", "bird", "cat", "dog", "down", "eight", "five"]
+        base_subdirs = ["backward", "bed", "bird"]
         print("Normalizing and mixing main dataset...")
         normalize_overlay(dataset_base_dir, base_subdirs)
         print("Main dataset process complete.")
