@@ -82,11 +82,11 @@ services:
       - ~/datapipeline/workspace:/home/work/
       - type: bind
         source: /mnt/object
-        target: /mnt/Food-11
+        target: /mnt/speechcommands
         read_only: true
       - type: bind
         source: /mnt/object
-        target: /mnt/Food-11
+        target: /mnt/speechcommands
         read_only: true
     command: >
       bash -c "python3 -m pip install mlflow && start-notebook.sh"
