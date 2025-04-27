@@ -52,6 +52,7 @@ services:
 
         python3 -c '
         import os
+        import random
         import numpy as np
         import torchaudio
         from pydub import AudioSegment
@@ -74,7 +75,12 @@ services:
                 normalized_dir_path = os.path.join(normalized_dataset_dir, subdir)
                 os.makedirs(normalized_dir_path, exist_ok=True)
 
-                for file in os.listdir(dir_path):
+                # randomly select half of the files
+                selected_files = [entry.name for entry in os.scandir(dir_path) if entry.is_file()]
+                random.shuffle(selected_files)
+                half_files = selected_files[:len(selected_files) // 2]
+
+                for file in half_files:
                     if not file.endswith(".wav"):
                         continue
 
@@ -117,11 +123,10 @@ services:
         background_dir = base_dir + "/_background_noise_normalized"
 
         # normalize and overlay main with background audio files
-        # base_subdirs = ["backward", "bed", "bird", "cat", "dog", "down", "eight", "five", 
-        #                 "follow", "forward", "four", "go", "happy", "house", "learn", "left", 
-        #                 "marvin", "nine", "no", "off", "on", "one", "right", "seven", "sheila", 
-        #                 "six", "stop", "three", "tree", "two", "up", "visual", "wow", "yes", "zero"]
-        base_subdirs = ["backward", "bed", "bird"]
+        base_subdirs = ["backward", "bed", "bird", "cat", "dog", "down", "eight", "five", 
+                        "follow", "forward", "four", "go", "happy", "house", "learn", "left", 
+                        "marvin", "nine", "no", "off", "on", "one", "right", "seven", "sheila", 
+                        "six", "stop", "three", "tree", "two", "up", "visual", "wow", "yes", "zero"]
         print("Normalizing and mixing main dataset...")
         normalize_overlay(dataset_base_dir, base_subdirs)
         print("Main dataset process complete.")
@@ -130,9 +135,9 @@ services:
         dataset_test_dir = os.path.join(base_dir, "speech_commands_test_set_v0.02")
         test_subdirs = ["_silence_", "_unknown_", "down", "go", "left", "no", "off",
                         "on", "right", "stop", "up", "yes"]
-        print("Normalizing and mixing test dataset...")
-        normalize_overlay(dataset_test_dir, test_subdirs)
-        print("Test dataset process complete.")
+        # print("Normalizing and mixing test dataset...")
+        # normalize_overlay(dataset_test_dir, test_subdirs)
+        # print("Test dataset process complete.")
 
         def melspectrogram(file_path, mel_file_path):
             waveform, sample_rate = torchaudio.load(file_path, normalize=True)
@@ -213,12 +218,12 @@ services:
                                 (MAX_NUM_WAVS_PER_CLASS + 1)) *
                                 (100.0 / MAX_NUM_WAVS_PER_CLASS))
             if percentage_hash < validation_percentage:
-                result = 'validation'
+                result = "validation"
             elif percentage_hash < (testing_percentage + validation_percentage):
-                result = 'evaluation'
+                result = "evaluation"
                 # result = 'testing'
             else:
-                result = 'training'
+                result = "training"
             return result
 
         base_dir = "/data"
