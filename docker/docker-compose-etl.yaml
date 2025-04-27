@@ -20,17 +20,17 @@ services:
         echo "Downloading main and test datasets..."
         curl -L http://download.tensorflow.org/data/speech_commands_v0.02.tar.gz \
           -o speech_commands_v0.02.tar.gz
-        # curl -L http://download.tensorflow.org/data/speech_commands_test_set_v0.02.tar.gz \
-          # -o speech_commands_test_set_v0.02.tar.gz
+        curl -L http://download.tensorflow.org/data/speech_commands_test_set_v0.02.tar.gz \
+          -o speech_commands_test_set_v0.02.tar.gz
 
         echo "Unzipping main and test datasets..."
         mkdir -p speech_commands_v0.02
         tar -xzf speech_commands_v0.02.tar.gz -C speech_commands_v0.02
         rm speech_commands_v0.02.tar.gz
 
-        # mkdir -p speech_commands_test_set_v0.02
-        # tar -xzf speech_commands_test_set_v0.02.tar.gz -C speech_commands_test_set_v0.02
-        # rm speech_commands_test_set_v0.02.tar.gz
+        mkdir -p speech_commands_test_set_v0.02
+        tar -xzf speech_commands_test_set_v0.02.tar.gz -C speech_commands_test_set_v0.02
+        rm speech_commands_test_set_v0.02.tar.gz
 
         echo "Listing contents of /data after extract stage:"
         ls -l /data
@@ -127,17 +127,17 @@ services:
                         "follow", "forward", "four", "go", "happy", "house", "learn", "left", 
                         "marvin", "nine", "no", "off", "on", "one", "right", "seven", "sheila", 
                         "six", "stop", "three", "tree", "two", "up", "visual", "wow", "yes", "zero"]
-        print("Normalizing and mixing main dataset...")
-        normalize_overlay(dataset_base_dir, base_subdirs)
-        print("Main dataset process complete.")
+        # print("Normalizing and mixing main dataset...")
+        # normalize_overlay(dataset_base_dir, base_subdirs)
+        # print("Main dataset process complete.")
 
         # normalize and overlay test with background audio files
         dataset_test_dir = os.path.join(base_dir, "speech_commands_test_set_v0.02")
         test_subdirs = ["_silence_", "_unknown_", "down", "go", "left", "no", "off",
                         "on", "right", "stop", "up", "yes"]
-        # print("Normalizing and mixing test dataset...")
-        # normalize_overlay(dataset_test_dir, test_subdirs)
-        # print("Test dataset process complete.")
+        print("Normalizing and mixing test dataset...")
+        normalize_overlay(dataset_test_dir, test_subdirs)
+        print("Test dataset process complete.")
 
         def melspectrogram(file_path, mel_file_path):
             waveform, sample_rate = torchaudio.load(file_path, normalize=True)
@@ -168,9 +168,9 @@ services:
         generate_mel(dataset_base_dir, base_subdirs)
         print("Generating complete.")
 
-        # print("Generating mel spectrogram for test dataset...")
-        # generate_mel(dataset_test_dir, test_subdirs)
-        # print("Generating complete.")
+        print("Generating mel spectrogram for test dataset...")
+        generate_mel(dataset_test_dir, test_subdirs)
+        print("Generating complete.")
         '
         
         echo "Listing contents of /data after transform stage:"
@@ -283,10 +283,10 @@ services:
           echo "ERROR: RCLONE_CONTAINER is not set"
           exit 1
         fi
-        echo "Cleaning up existing contents of container..."
-        rclone delete chi_tacc:$RCLONE_CONTAINER --rmdirs || true
+        # echo "Cleaning up existing contents of container..."
+        # rclone delete chi_tacc:$RCLONE_CONTAINER --rmdirs || true
 
-        rclone copy /data chi_tacc:$RCLONE_CONTAINER \
+        rclone copy /data/speech_commands_test* chi_tacc:$RCLONE_CONTAINER \
         --progress \
         --transfers=32 \
         --checkers=16 \
